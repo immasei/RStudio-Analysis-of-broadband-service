@@ -1,0 +1,131 @@
+---
+title: "R Project"
+author: "Lan Linh Nguyen"
+subtitle: "BroadBand"
+date: "University of Sydney | May 2022"
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    self_contained: yes
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+---
+<br>
+
+# Recommendation
+
+ > What network service from a good brand is suitable for a professional LoL gamer?
+ 
+It’s recommended that clients choose `Telstra`, `Optus` or `Aussie Broadband` for **high network coverage** and **low latency**. Among 3, `Telstra` ranks higher in total.
+
+<br>
+
+# Evidence
+
+<br>
+
+>**A. LIMITATION**
+
+*Note that not every RSP is included, which are recorded as `Other RSPs`*
+
+```{r, message=F}
+# Load packages
+library(tidyverse)
+library(dplyr)
+library(ggpubr)
+library(viridis)
+
+# Read dataset
+broadband = read.csv("http://www.maths.usyd.edu.au/u/UG/JM/DATA1001/r/current/projects/2022data/broadband.csv")
+
+#clear all NAs in RSP
+bna <- broadband %>%
+       filter(broadband$rsp != "") %>%
+       na.omit() 
+  
+# Only retain NSW
+bnsw <- bna %>%
+        filter(state_or_territory == 'NSW')
+
+# Add a column to calculate the average
+final <- bnsw %>%
+         mutate(avg_latency = (All.hour.maximum.latency +  All.hour.minimum.latency)/2) 
+```
+
+<br>
+
+>**B. WHICH RSPs PROVIDE THE MOST NBN SERVICES?**
+
+```{r}
+My_Theme = theme(
+  axis.title.x = element_text(size=13),
+  axis.text.x = element_text(size=13),
+  axis.title.y = element_text(size=15))
+
+# Barplot
+ggplot(final, aes(x=final$rsp)) +
+  geom_bar(aes(fill=final$rsp), color='black', alpha=0.7) + 
+  geom_text(aes(label = ..count..), stat="count", vjust=0.3, hjust=-0.3, size=3, colour="black") + 
+  theme_minimal() +
+  labs(x='Retail Service Provider', y='', fill='RSP', title='NETWORK COVERAGE (NSW)') +
+  scale_fill_viridis(discrete=TRUE, option="D") +
+  coord_flip() + 
+  My_Theme 
+```
+
+This graph summarizes the number of networks (NBN Connection) owned per Retail Service Provider (RSP) in New South Wales (NSW). The majority of these NBN services, **21.48 %** were found to be operated by `Optus`. Following by `Telstra`, who owns **18.02 %** of the network service, and `TPG` with a total of **16.54 %**. 
+
+Generally, RSP with more NBN service is more beneficial because if one NBN connection is impaired or underperforming, they could replace it easily with another server nearby. Therefore, the stability of the network is highly likely ensured. It also seems that `Optus`, `Telstra` and `TPG` has more network coverage than the others. It could be that their infrastructure in NSW is more solid, hence the higher quantities and quality.
+
+*RSPs are brands that provides exclusive access to NBN service. RSPs could be seen as the authorized sellers of NBN Co. However, the final product that reaches customers sometimes are mixed between the services of various wholesalers to bring the desired services to users. Therefore, although they all provide NBN services, products from each RSP are different.*
+
+<br>
+
+>**C. WHICH RSPs PROVIDE LOW PING FOR A LoL PRO PLAYER?**
+
+```{r}
+# Boxplot
+ggplot(final, aes(x=avg_latency, y=rsp, fill = rsp, palette = 'jco')) +
+  geom_boxplot(outlier.size = 1, outlier.shape = 1, outlier.color = 'red', alpha=0.8) + 
+  theme_bw() +
+  theme(legend.position="right") +
+  labs(x='Average network delays of all hours (ms)', y = 'Retail Service Provider', title = 'LATENCY (PING)', fill='RSP') +
+  My_Theme +
+  scale_fill_brewer(palette = 'Spectral')
+```
+
+According to the Wiki Esports Guides (2022), ping less than 30 ms is the ideal ping, where 30 to 50 ms is considered average.
+
+*Ping is often used interchangeably with latency, or lag. However, Jolene Dobbin (2020)states that latency is a measurement of the entire round trip of that signal while ping is just one way. We could say that latency is a more finished measurement for the broadband quality instead of ping. For better understanding, please refer ‘low latency’ as ‘low ping’ and ‘high latency’ as ‘high ping’.*
+
+From the graph, few RSPs that satisfies the condition are Vodafone, Telstra, Superloop, Optus, Exetel, Dodo & iPrimus and Aussie Broadband.
+
+Besides Optus and Telstra, all others indicate very good latency. Especially with `Aussie Broadband`, the network coverage is in the top 4-5 (**10.62 %**) and average latency is also **less than 37 ms**. The best latency belongs to `Vodafone` with the average latency **less than 25 ms**, however, `Vodafone` has the least NBN connections so it may rely heavily on location. Between Telstra and Optus, `Telstra` is better with the spread and median ping significantly lower than `Optus`. 
+
+<br>
+
+#  Acknowledgments
+
+<br>
+
+| Jolene Dobbin. (2020). *Lag! Top 5 Reasons your Ping is so High.*
+|         https://www.hp.com/us-en/shop/tech-takes/5-reasons-your-ping-is-so-high#
+| PING FOR LEAGUE OF LEGENDS - HOW TO CHECK AND LOWER PING FOR LOL. (2022). 
+|         https://www.esports.net/wiki/guides/ping-league-of-legends/
+| About us. (2012). 
+|         https://www.retailserviceprovider.com.au/#
+| Change size of axes title and labels in ggplot2. (2013). 
+|         https://stackoverflow.com/questions/14942681/change-size-of-axes-title-and-labels-in-ggplot2
+| A box and whiskers plot (in the style of Tukey). (2022). 
+|         https://ggplot2.tidyverse.org/reference/geom_boxplot.html
+| 3.9 Adding Labels to a Bar Graph. (2022).
+|         https://r-graphics.org/recipe-bar-graph-labels
+| Colors (ggplot2). (2022).
+|         http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+| Dual y axis on graph
+|         https://stackoverflow.com/questions/6142944/how-can-i-plot-with-2-different-y-axes
+|         https://r-graph-gallery.com/line-chart-dual-Y-axis-ggplot2.html
