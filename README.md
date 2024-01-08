@@ -10,11 +10,11 @@ We would decide which one is the best base on network coverage (number of Retail
 Therefore, we aiming for brands that has high network coverage and low latency. From our analysis, it’s recommended that clients choose `Telstra`, `Optus` or `Aussie Broadband`. Among 3, `Telstra` ranks higher in total.
 
 <p align='center'>
-  <img align='center' src='b.png' width='650'/>
+  <img align='center' src='readme/b.png' width='650'/>
 </p>
 
 <p align='center'>
-  <img align='center' src='c.png' width='650'/>
+  <img align='center' src='readme/c.png' width='650'/>
 </p>
 
 ## Note
