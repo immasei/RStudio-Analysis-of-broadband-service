@@ -1,4 +1,4 @@
-# RStudio-Analysis-of-broadband-service
+# An analysis of NSW broadband service
 
 ## Data source 
 https://data.gov.au/data/dataset/measuring-broadband-australia-report-15-dataset-release
